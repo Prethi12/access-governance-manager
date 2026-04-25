@@ -1,4 +1,4 @@
-package com.internship.access_governance_manager;
+package com.internship.accessgovernancemanager;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
