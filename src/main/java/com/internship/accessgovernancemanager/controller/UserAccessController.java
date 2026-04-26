@@ -7,6 +7,8 @@ import com.internship.accessgovernancemanager.dto.ApiResponse;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 
 import java.util.List;
 
@@ -46,5 +48,15 @@ public ApiResponse<UserAccess> getUserById(@PathVariable Long id) {
 public ApiResponse<String> deleteUser(@PathVariable Long id) {
     service.deleteUser(id);
     return new ApiResponse<>("success", "User deleted", null);
+}
+
+@GetMapping("/paginated")
+public ApiResponse<Page<UserAccess>> getUsers(Pageable pageable) {
+    return new ApiResponse<>("success", "Users fetched", service.getUsers(pageable));
+}
+
+@GetMapping("/search")
+public ApiResponse<List<UserAccess>> searchUsers(@RequestParam String username) {
+    return new ApiResponse<>("success", "Users found", service.searchUsers(username));
 }
 }
