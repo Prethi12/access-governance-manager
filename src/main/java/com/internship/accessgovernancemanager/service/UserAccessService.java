@@ -21,8 +21,10 @@ public class UserAccessService {
 }
 
 public UserAccess getUserById(Long id) {
-    return repository.findById(id).orElse(null);
+    return repository.findById(id)
+            .orElseThrow(() -> new RuntimeException("User not found"));
 }
+
 
 public UserAccess updateUser(Long id, UserAccess updatedUser) {
     UserAccess existingUser = repository.findById(id).orElse(null);

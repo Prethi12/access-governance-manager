@@ -1,5 +1,0 @@
-com\internship\accessgovernancemanager\entity\UserAccess.class
-com\internship\accessgovernancemanager\service\UserAccessService.class
-com\internship\accessgovernancemanager\controller\UserAccessController.class
-com\internship\accessgovernancemanager\repository\UserAccessRepository.class
-com\internship\accessgovernancemanager\AccessGovernanceManagerApplication.class

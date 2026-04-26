@@ -2,10 +2,13 @@ package com.internship.accessgovernancemanager.controller;
 
 import com.internship.accessgovernancemanager.entity.UserAccess;
 import com.internship.accessgovernancemanager.service.UserAccessService;
+import com.internship.accessgovernancemanager.dto.ApiResponse;
+
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
+
 import java.util.List;
-import org.springframework.web.bind.annotation.PathVariable;
 
 @RestController
 @RequestMapping("/users")
@@ -15,38 +18,33 @@ public class UserAccessController {
     private UserAccessService service;
 
     @PostMapping
-    public UserAccess addUser(@RequestBody UserAccess user) {
-        return service.saveUser(user);
+    public ApiResponse<UserAccess> addUser(@Valid @RequestBody UserAccess user) {
+    UserAccess savedUser = service.saveUser(user);
+    return new ApiResponse<>("success", "User created successfully", savedUser);
+}
+
+   @GetMapping
+public ApiResponse<List<UserAccess>> getAllUsers() {
+    return new ApiResponse<>("success", "Users fetched", service.getAllUsers());
+}
+@GetMapping("/{id}")
+public ApiResponse<UserAccess> getUserById(@PathVariable Long id) {
+    return new ApiResponse<>("success", "User found", service.getUserById(id));
+}
+
+    @GetMapping("/role/{role}")
+    public List<UserAccess> getUsersByRole(@PathVariable String role) {
+        return service.getUsersByRole(role);
     }
 
-    @GetMapping
-public List<UserAccess> getAllUsers() {
-    return service.getAllUsers();
-}
+    @PutMapping("/{id}")
+    public UserAccess updateUser(@PathVariable Long id, @RequestBody UserAccess user) {
+        return service.updateUser(id, user);
+    }
 
-@GetMapping("/{id}")
-public UserAccess getUser(@PathVariable Long id) {
-    return service.getUserById(id);
-}
-
-@PutMapping("/{id}")
-public UserAccess updateUser(@PathVariable Long id, @RequestBody UserAccess user) {
-    return service.updateUser(id, user);
-}
-
-@DeleteMapping("/{id}")
-public String deleteUser(@PathVariable Long id) {
+    @DeleteMapping("/{id}")
+public ApiResponse<String> deleteUser(@PathVariable Long id) {
     service.deleteUser(id);
-    return "User deleted successfully";
-}
-
-@GetMapping("/role/{role}")
-public List<UserAccess> getByRole(@PathVariable String role) {
-    return service.getUsersByRole(role);
-}
-
-@GetMapping("/username/{username}")
-public List<UserAccess> getByUsername(@PathVariable String username) {
-    return service.getUsersByUsername(username);
+    return new ApiResponse<>("success", "User deleted", null);
 }
 }

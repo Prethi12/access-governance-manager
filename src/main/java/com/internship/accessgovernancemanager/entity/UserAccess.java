@@ -1,6 +1,7 @@
 package com.internship.accessgovernancemanager.entity;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotBlank;
 import lombok.*;
 import java.time.LocalDateTime;
 
@@ -19,8 +20,13 @@ public class UserAccess {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @NotBlank(message = "Username is required")
     private String username;
+
+    @NotBlank(message = "Role is required")
     private String role;
+
+    @NotBlank(message = "Access Level is required")
     private String accessLevel;
 
     @CreatedDate
