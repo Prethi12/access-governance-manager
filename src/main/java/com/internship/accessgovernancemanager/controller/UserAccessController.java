@@ -2,6 +2,7 @@ package com.internship.accessgovernancemanager.controller;
 
 import com.internship.accessgovernancemanager.entity.UserAccess;
 import com.internship.accessgovernancemanager.service.UserAccessService;
+import com.internship.accessgovernancemanager.service.EmailService;
 import com.internship.accessgovernancemanager.dto.ApiResponse;
 import com.internship.accessgovernancemanager.dto.RefreshTokenRequest;
 import com.internship.accessgovernancemanager.dto.TokenResponse;
@@ -32,10 +33,29 @@ public class UserAccessController {
     @Autowired
     private JwtUtil jwtUtil;
 
+    @Autowired
+    private EmailService emailService;
+
     // ✅ TEST API (PUBLIC)
     @GetMapping("/test")
     public String test() {
         return "Working";
+    }
+
+    // 📧 TEST EMAIL ENDPOINT
+    @PostMapping("/test-email")
+    public ApiResponse<String> testEmail(@RequestParam String to, @RequestParam(required = false) String subject) {
+        try {
+            String emailSubject = subject != null ? subject : "Test Email from Access Governance Manager";
+            String emailBody = "This is a test email from your Access Governance Manager application.\n\n" +
+                              "If you received this email, the email configuration is working correctly!\n\n" +
+                              "Sent at: " + java.time.LocalDateTime.now();
+
+            emailService.sendSimpleEmail(to, emailSubject, emailBody);
+            return new ApiResponse<>("success", "Test email sent successfully to: " + to, null);
+        } catch (Exception e) {
+            return new ApiResponse<>("error", "Failed to send test email: " + e.getMessage(), null);
+        }
     }
 
     // 🔐 ONLY ADMIN
@@ -129,7 +149,7 @@ public class UserAccessController {
 
         String username = jwtUtil.extractUsername(refreshToken);
 
-        if (!dbUser.getUsername().equals(username) || !jwtUtil.validateToken(refreshToken)) {
+        if (!dbUser.getUsername().equals(username) || !jwtUtil.validateToken(refreshToken, username)) {
             throw new RuntimeException("Invalid refresh token");
         }
 
@@ -145,7 +165,11 @@ public class UserAccessController {
     public ApiResponse<UserAccess> register(@RequestBody UserAccess user) {
 
         if (service.findByUsername(user.getUsername()) != null) {
-            return new ApiResponse<>("failed", "User already exists", null);
+            return new ApiResponse<>("failed", "Username already exists", null);
+        }
+
+        if (service.findByEmail(user.getEmail()) != null) {
+            return new ApiResponse<>("failed", "Email already exists", null);
         }
 
         // 🔥 VERY IMPORTANT FIX
@@ -155,6 +179,7 @@ public class UserAccessController {
 
         return new ApiResponse<>("success", "User registered successfully", savedUser);
     }
+
 
     // 🔐 ADMIN ONLY TEST
     @PreAuthorize("hasRole('ADMIN')")

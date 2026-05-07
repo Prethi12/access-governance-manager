@@ -14,6 +14,9 @@ import org.springframework.lang.NonNull;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.cache.annotation.CacheEvict;
 
+// ✅ EMAIL SERVICE
+import com.internship.accessgovernancemanager.service.EmailService;
+
 import java.util.List;
 
 @Service
@@ -25,11 +28,24 @@ public class UserAccessService {
     @Autowired
     private PasswordEncoder passwordEncoder;
 
+    @Autowired
+    private EmailService emailService;
+
     // ✅ REGISTER (CLEAR CACHE)
     @CacheEvict(value = "users", allEntries = true)
     public UserAccess registerUser(UserAccess user) {
         user.setPassword(passwordEncoder.encode(user.getPassword()));
-        return repository.save(user);
+        UserAccess savedUser = repository.save(user);
+
+        // 📧 Send welcome email
+        try {
+            emailService.sendWelcomeEmail(savedUser);
+        } catch (Exception e) {
+            // Log error but don't fail registration
+            System.err.println("Failed to send welcome email: " + e.getMessage());
+        }
+
+        return savedUser;
     }
 
     // ✅ FIND USER
@@ -37,11 +53,15 @@ public class UserAccessService {
         return repository.findByUsername(username).orElse(null);
     }
 
+    public UserAccess findByEmail(String email) {
+        return repository.findByEmail(email).orElse(null);
+    }
+
     public UserAccess findByRefreshToken(String refreshToken) {
         return repository.findByRefreshToken(refreshToken).orElse(null);
     }
 
-    public UserAccess updateRefreshToken(UserAccess user, String refreshToken) {
+    public UserAccess updateRefreshToken(@NonNull UserAccess user, String refreshToken) {
         return repository.save(user);
     }
 
