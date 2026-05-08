@@ -1,6 +1,7 @@
 package com.internship.accessgovernancemanager.controller;
 
 import com.internship.accessgovernancemanager.entity.UserAccess;
+import com.internship.accessgovernancemanager.exception.BadRequestException;
 import com.internship.accessgovernancemanager.service.UserAccessService;
 import com.internship.accessgovernancemanager.service.EmailService;
 import com.internship.accessgovernancemanager.dto.ApiResponse;
@@ -12,6 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import jakarta.validation.Valid;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.lang.NonNull;
 
@@ -115,11 +117,11 @@ public class UserAccessController {
         UserAccess dbUser = service.findByUsername(user.getUsername());
 
         if (dbUser == null) {
-            throw new RuntimeException("User not found");
+            throw new BadRequestException("User not found");
         }
 
         if (!passwordEncoder.matches(user.getPassword(), dbUser.getPassword())) {
-            throw new RuntimeException("Invalid password");
+            throw new BadRequestException("Invalid password");
         }
 
         String accessToken = jwtUtil.generateAccessToken(dbUser.getUsername(), dbUser.getRole());
@@ -138,19 +140,19 @@ public class UserAccessController {
         String refreshToken = refreshRequest.getRefreshToken();
 
         if (refreshToken == null || refreshToken.isBlank()) {
-            throw new RuntimeException("Refresh token is required");
+            throw new BadRequestException("Refresh token is required");
         }
 
         UserAccess dbUser = service.findByRefreshToken(refreshToken);
 
         if (dbUser == null) {
-            throw new RuntimeException("Invalid refresh token");
+            throw new BadRequestException("Invalid refresh token");
         }
 
         String username = jwtUtil.extractUsername(refreshToken);
 
         if (!dbUser.getUsername().equals(username) || !jwtUtil.validateToken(refreshToken, username)) {
-            throw new RuntimeException("Invalid refresh token");
+            throw new BadRequestException("Invalid refresh token");
         }
 
         String accessToken = jwtUtil.generateAccessToken(dbUser.getUsername(), dbUser.getRole());
@@ -162,7 +164,7 @@ public class UserAccessController {
 
     // ✅ REGISTER (PUBLIC)
     @PostMapping("/register")
-    public ApiResponse<UserAccess> register(@RequestBody UserAccess user) {
+    public ApiResponse<UserAccess> register(@Valid @RequestBody UserAccess user) {
 
         if (service.findByUsername(user.getUsername()) != null) {
             return new ApiResponse<>("failed", "Username already exists", null);

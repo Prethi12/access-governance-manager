@@ -1,6 +1,7 @@
 package com.internship.accessgovernancemanager.service;
 
 import com.internship.accessgovernancemanager.entity.UserAccess;
+import com.internship.accessgovernancemanager.exception.ResourceNotFoundException;
 import com.internship.accessgovernancemanager.repository.UserAccessRepository;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -82,7 +83,7 @@ public class UserAccessService {
     public UserAccess getUserById(@NonNull Long id) {
         System.out.println("🔥 DB HIT - getUserById");
         return repository.findById(id)
-                .orElseThrow(() -> new RuntimeException("User not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("User not found"));
     }
 
     // ✅ UPDATE USER (CLEAR CACHE)
@@ -90,7 +91,7 @@ public class UserAccessService {
     public UserAccess updateUser(@NonNull Long id, UserAccess updatedUser) {
 
         UserAccess existingUser = repository.findById(id)
-                .orElseThrow(() -> new RuntimeException("User not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("User not found"));
 
         existingUser.setUsername(updatedUser.getUsername());
         existingUser.setRole(updatedUser.getRole());

@@ -22,7 +22,7 @@ public class NotificationService {
     private EmailService emailService;
 
     // 🕘 DAILY REMINDER - Every day at 9 AM
-    @Scheduled(fixedRate=60000)
+    @Scheduled(fixedRate=900000)
     public void sendDailyReminders() {
         System.out.println("🔔 Sending daily reminders...");
 
@@ -45,7 +45,7 @@ public class NotificationService {
     }
 
     // ⏰ DEADLINE ALERT - Every 6 hours (check for tasks due in next 24 hours)
-    @Scheduled(fixedRate = 21600000) // 6 hours in milliseconds
+    @Scheduled(fixedRate = 1800000) // 6 hours in milliseconds
     public void sendDeadlineAlerts() {
         System.out.println("⚠️ Checking for deadline alerts...");
 

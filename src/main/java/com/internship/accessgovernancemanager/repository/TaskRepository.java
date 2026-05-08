@@ -19,11 +19,11 @@ public interface TaskRepository extends JpaRepository<Task, Long> {
 
     List<Task> findByAssignedUserAndStatus(UserAccess user, String status);
 
-    // Find tasks near deadline (within next 24 hours)
-    @Query("SELECT t FROM Task t WHERE t.deadline BETWEEN :now AND :tomorrow AND t.status != 'COMPLETED'")
+    // Find tasks near deadline (within next 24 hours) and eagerly fetch the assigned user
+    @Query("SELECT t FROM Task t JOIN FETCH t.assignedUser WHERE t.deadline BETWEEN :now AND :tomorrow AND t.status != 'COMPLETED'")
     List<Task> findTasksNearDeadline(@Param("now") LocalDateTime now, @Param("tomorrow") LocalDateTime tomorrow);
 
-    // Find overdue tasks
-    @Query("SELECT t FROM Task t WHERE t.deadline < :now AND t.status != 'COMPLETED'")
+    // Find overdue tasks and eagerly fetch the assigned user
+    @Query("SELECT t FROM Task t JOIN FETCH t.assignedUser WHERE t.deadline < :now AND t.status != 'COMPLETED'")
     List<Task> findOverdueTasks(@Param("now") LocalDateTime now);
 }
