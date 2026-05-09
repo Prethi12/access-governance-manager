@@ -6,7 +6,7 @@ services:
     container_name: access-manager-mysql
     restart: unless-stopped
     environment:
-      MYSQL_ROOT_PASSWORD: YOUR_PASSWORD
+      MYSQL_ROOT_PASSWORD: Prethi@12
       MYSQL_DATABASE: access_manager
       MYSQL_USER: appuser
       MYSQL_PASSWORD: apppass
@@ -42,7 +42,7 @@ services:
     environment:
       SPRING_DATASOURCE_URL: jdbc:mysql://mysql:3306/access_manager
       SPRING_DATASOURCE_USERNAME: root
-      SPRING_DATASOURCE_PASSWORD: YOUR_PASSWORD
+      SPRING_DATASOURCE_PASSWORD: Prethi@12
       SPRING_DATA_REDIS_HOST: redis
       SPRING_DATA_REDIS_PORT: 6379
     depends_on:
@@ -67,7 +67,7 @@ services:
       PMA_HOST: mysql
       PMA_PORT: 3306
       PMA_USER: root
-      PMA_PASSWORD: YOUR_PASSWORD
+      PMA_PASSWORD: Prethi@12
     depends_on:
       mysql:
         condition: service_healthy

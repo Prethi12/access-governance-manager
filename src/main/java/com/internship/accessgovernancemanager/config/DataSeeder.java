@@ -27,7 +27,9 @@ public class DataSeeder implements CommandLineRunner {
 
     @Override
     public void run(String... args) throws Exception {
-      System.out.println("DATA SEEDER STARTED");
+        if(userRepository.count() > 0) {
+            System.out.println("DATA SEEDER STARTED");
+        }
 
         List<UserAccess> users = new ArrayList<>();
 
